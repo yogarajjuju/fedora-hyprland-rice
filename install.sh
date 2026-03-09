@@ -8,7 +8,7 @@ echo "----------------------------------------"
 echo "📦 Installing dependencies..."
 sudo dnf install -y hyprland waybar swaync rofi swww kitty \
 brightnessctl wireplumber NetworkManager-tui grim slurp \
-jetbrains-mono-fonts-all nwg-look
+jetbrains-mono-fonts-all nwg-look hypridle
 
 # 2. Back up existing configs (just in case)
 echo "📂 Backing up old configs..."
