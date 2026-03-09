@@ -1,11 +1,15 @@
 # 🟣 Liquid Glass Hyprland
-A smooth, iOS-16 inspired Hyprland rice for Fedora.
+A smooth, Oxygen OS 16 inspired Hyprland rice for Fedora.
+
+![Desktop Preview](preview.png)
 
 ### ✨ Features
-- **Smooth AFK Animations:** iOS 16 style app shrinking and bouncy pop-ins.
-- **Liquid Glass:** High-blur, translucent windows with a purple "Ripple" glow.
-- **Student Optimized:** Fast shortcuts for VS Code and Data Science workflows.
+- **iOS 16 Style Animations:** Smooth app shrinking and bouncy pop-ins.
+- **Liquid Glass Aesthetic:** High-blur, translucent windows with a purple "Ripple" glow.
+- **Optimized for AI/DS:** Fast shortcuts for VS Code and research workflows.
 
 ### 🚀 Installation
-1. Clone the repo: `git clone https://github.com/YOUR_USERNAME/Liquid-Hyprland.git`
-2. Run the installer: `./install.sh`
+1. Clone the repo: 
+   `git clone https://github.com/yogarajjuju/fedora-hyprland-rice.git`
+2. Run the installer: 
+   `./install.sh`
