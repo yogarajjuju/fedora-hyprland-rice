@@ -4,9 +4,8 @@ A smooth, Oxygen OS 16 inspired Hyprland rice for Fedora.
 ![Main Desktop Preview](pics/screenshot-1773066616.png)
 
 ### ✨ Features
-- **iOS 16 Style Animations:** Smooth app shrinking and bouncy pop-ins.
+- **Oxygen OS 16 Style Animations:** Smooth app shrinking and bouncy pop-ins.
 - **Liquid Glass Aesthetic:** High-blur, translucent windows with a purple "Ripple" glow.
-- **Data Science Ready:** Fast shortcuts for VS Code and research workflows.
 - **Auto-Locking:** Integrated `hypridle` for 3-minute AFK security.
 
 ### ⌨️ Keybindings
