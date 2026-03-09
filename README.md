@@ -1,16 +1,15 @@
 # 🟣 Liquid Glass Hyprland
-A smooth, Oxygen OS 16inspired Hyprland rice for Fedora.
+A smooth, Oxygen OS 16 inspired Hyprland rice for Fedora.
 
-![Desktop Preview](pics/YOUR_MAIN_IMAGE_NAME.png)
+![Main Desktop Preview](pics/screenshot-1773066616.png)
 
 ### ✨ Features
 - **iOS 16 Style Animations:** Smooth app shrinking and bouncy pop-ins.
 - **Liquid Glass Aesthetic:** High-blur, translucent windows with a purple "Ripple" glow.
-- **Data Science Ready:** Fast shortcuts for VS Code and research workflows to keep model training efficient.
+- **Data Science Ready:** Fast shortcuts for VS Code and research workflows.
+- **Auto-Locking:** Integrated `hypridle` for 3-minute AFK security.
 
 ### ⌨️ Keybindings
-Here are the core shortcuts to navigate the environment:
-
 | Keys | Action |
 | :--- | :--- |
 | `SUPER + T` | Open Terminal (Kitty) |
@@ -19,12 +18,9 @@ Here are the core shortcuts to navigate the environment:
 | `SUPER + E` | Open File Manager (Dolphin) |
 | `SUPER + A` | Open App Launcher (Rofi) |
 | `SUPER + Q` | Close Active Window |
-| `SUPER + W` | Floating Wi-Fi Menu |
 | `SUPER + L` | Lock Screen |
 | `SUPER + P` | Take Screenshot |
 | `SUPER + ALT + W` | Cycle Random Wallpaper |
-| `SUPER + /` | Open Cheatsheet |
-| `ALT + CTRL_R` | Reload Waybar |
 
 ### 🚀 Installation
 1. Clone the repo: 
@@ -32,7 +28,25 @@ Here are the core shortcuts to navigate the environment:
 2. Run the installer: 
    `./install.sh`
 
-### 📸 Gallery
-*Add a few more shots of your setup here!*
-![Gallery Image 1](pics/YOUR_SECOND_IMAGE.png)
-![Gallery Image 2](pics/YOUR_THIRD_IMAGE.png)
+### 📸 Full Setup Gallery
+
+#### 🔒 Security & Lockscreen
+![Lockscreen View](pics/lockscreen-shott.png)
+*Custom lockscreen with blur and "juju" welcome message.*
+
+#### 🎵 Media & Visualizer
+![Music and Cava](pics/screenshot-1773066696.png)
+*Waybar integration with Spotify/MPRIS and Cava visualizer.*
+
+#### 💻 Development Environment
+![Coding Setup](pics/screenshot-1773066726.png)
+*VS Code and Terminal with "Liquid Glass" transparency.*
+
+#### 🖥️ Workspace & Window Management
+![Workspaces](pics/screenshot-1773066627.png)
+*Smooth workspace transitions and floating window rules.*
+
+#### 🕒 System & Alternate Styles
+![System Info](pics/screenshot-1773066813.png)
+![Alternate Wallpaper](pics/2026-03-09_19-59-14.png)
+![Terminal View](pics/screenshot-1773066627.png)
