@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 set -e
 
-#|---/ /+------------------------------------+---/ /|#
-#|--/ /-| Liquid Glass Hyprland Installer    |--/ /-|#
-#|-/ /--| Created by Yogaraj Juju            |-/ /--|#
-#|/ /---+------------------------------------+/ /---|#
+#--------------------------------#
+# Colors
+#--------------------------------#
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+PURPLE='\033[1;35m'
+CYAN='\033[0;36m'
+NC='\033[0m'
 
 clear
 
-cat <<"EOF"
+cat << "EOF"
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ██╗     ██╗ ██████╗ ██╗   ██╗██╗██████╗
 ██║     ██║██╔═══██╗██║   ██║██║██╔══██╗
@@ -22,112 +27,150 @@ cat <<"EOF"
  Liquid Glass Hyprland
  Installer by Yogaraj Juju
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 EOF
 
+sleep 1
 
 #--------------------------------#
-# Spinner Animation
+# Fedora check
 #--------------------------------#
 
-spinner() {
-    local pid=$!
-    local spin='-\|/'
-    local i=0
-    while kill -0 $pid 2>/dev/null; do
-        i=$(( (i+1) %4 ))
-        printf "\r[%c] Installing..." "${spin:$i:1}"
-        sleep .1
-    done
-    printf "\r"
-}
-
-#--------------------------------#
-# Fedora Detection
-#--------------------------------#
-
-echo "🔍 Checking system compatibility..."
+echo -e "${CYAN}🔍 Checking system...${NC}"
 
 if ! command -v dnf &> /dev/null; then
-    echo "❌ This installer only supports Fedora."
+    echo -e "${RED}❌ Unsupported distro. Fedora required.${NC}"
     exit 1
 fi
 
-echo "✔ Fedora detected"
+echo -e "${GREEN}✔ Fedora detected${NC}"
+
 sleep 1
 
+#--------------------------------#
+# GPU Detection
+#--------------------------------#
+
+echo -e "${CYAN}🧠 Detecting GPU...${NC}"
+
+if lspci | grep -i nvidia &>/dev/null; then
+    GPU="nvidia"
+elif lspci | grep -i amd &>/dev/null; then
+    GPU="amd"
+else
+    GPU="intel"
+fi
+
+echo -e "${GREEN}✔ GPU detected: $GPU${NC}"
 
 #--------------------------------#
-# Install Dependencies
+# Menu
 #--------------------------------#
 
 echo ""
-echo "📦 Installing dependencies..."
+echo -e "${PURPLE}Select Installation Type${NC}"
 
-(
+echo "1) Full Install"
+echo "2) Only Configs"
+echo "3) Exit"
+
+read -rp "Choice: " choice
+
+case $choice in
+
+1)
+
+echo -e "${CYAN}📦 Installing dependencies...${NC}"
+
 sudo dnf copr enable solopasha/hyprland -y
+
 sudo dnf install -y \
-hyprland waybar swaync rofi swww kitty \
-brightnessctl wireplumber NetworkManager-tui \
-grim slurp jetbrains-mono-fonts-all \
-nwg-look hypridle
-) & spinner
+hyprland \
+waybar \
+swaync \
+rofi \
+swww \
+kitty \
+brightnessctl \
+wireplumber \
+NetworkManager-tui \
+grim \
+slurp \
+jetbrains-mono-fonts-all \
+nwg-look \
+hypridle
 
-echo "✔ Dependencies installed"
+;;
 
+2)
+
+echo -e "${CYAN}Skipping package installation${NC}"
+
+;;
+
+3)
+
+echo "Exiting installer"
+exit 0
+
+;;
+
+*)
+
+echo -e "${RED}Invalid option${NC}"
+exit 1
+
+;;
+
+esac
 
 #--------------------------------#
-# Backup Configs
+# Backup configs
 #--------------------------------#
 
 echo ""
-echo "📂 Backing up existing configs..."
+echo -e "${CYAN}📂 Backing up configs...${NC}"
 
 mkdir -p ~/.config/hypr_backup
 
-if [ -d ~/.config/hypr ]; then
-    mv ~/.config/hypr ~/.config/hypr_backup/hypr_$(date +%s)
-fi
+[ -d ~/.config/hypr ] && mv ~/.config/hypr ~/.config/hypr_backup/hypr_$(date +%s)
+[ -d ~/.config/waybar ] && mv ~/.config/waybar ~/.config/hypr_backup/waybar_$(date +%s)
 
-if [ -d ~/.config/waybar ]; then
-    mv ~/.config/waybar ~/.config/hypr_backup/waybar_$(date +%s)
-fi
-
-echo "✔ Backup completed"
-
+echo -e "${GREEN}✔ Backup complete${NC}"
 
 #--------------------------------#
-# Install Configs
+# Deploy configs
 #--------------------------------#
 
 echo ""
-echo "🚀 Installing Liquid Glass configs..."
+echo -e "${CYAN}🚀 Installing Liquid Glass configs...${NC}"
 
 cp -r .config/* ~/.config/
 
 chmod +x ~/.config/hypr/random_wall.sh
 
-echo "✔ Config installation complete"
-
+echo -e "${GREEN}✔ Config installation finished${NC}"
 
 #--------------------------------#
 # Finish
 #--------------------------------#
 
-cat <<"EOF"
+echo ""
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+cat << "EOF"
 
-🟣 Installation Completed
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Log out and choose Hyprland session.
+🟣 Installation Complete
 
-Keybinds:
+Log out and select Hyprland session.
+
+Keybind:
 SUPER + ALT + W → Change wallpaper
 
 Enjoy Liquid Glass ✨
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 EOF
