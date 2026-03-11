@@ -24,11 +24,16 @@ A smooth, Oxygen OS 16 inspired Hyprland rice for Fedora.
 ### 🚀 Installation
 1. Clone the repo: 
    `git clone https://github.com/yogarajjuju/fedora-hyprland-rice.git`
+   
 2.Locate to the repo:
     cd fedora-hyprland-rice
+   
+   
 3. Change the permissions:
     chmod +x ./install.sh
-4. Run the installer: 
+
+   
+5. Run the installer: 
    `./install.sh`
 
 ### 📸 Full Setup Gallery
