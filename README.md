@@ -1,4 +1,7 @@
-# 🟣 Liquid Glass Hyprland
+# 🌊 Hyra
+A fluid, glass-inspired Hyprland setup for Fedora
+
+Minimal. Fluid. Beautiful.
 
 A smooth, **OxygenOS 16 inspired Hyprland setup for Fedora**, featuring a modern *liquid glass* aesthetic with blur effects, animations, and a fully customized desktop experience.
 
