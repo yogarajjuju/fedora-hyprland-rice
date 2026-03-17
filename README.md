@@ -114,7 +114,7 @@ chmod +x install.sh
 ### 💻 Development Environment
 
 ![Coding Setup](pics/screenshot-1773066726.png)
-*VS Code and terminal with liquid glass transparency.*
+*NeoVim and terminal with liquid glass transparency.*
 
 ---
 
