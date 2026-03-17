@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
+LOG_FILE="hyra-install.log"
+
+#--------------------------------#
+# Logging
+#--------------------------------#
+
+log() {
+    echo -e "$1"
+    echo -e "$(date '+%H:%M:%S') - $1" >> "$LOG_FILE"
+}
+
 #--------------------------------#
 # Colors
 #--------------------------------#
@@ -17,15 +28,14 @@ cat << "EOF"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-██╗     ██╗ ██████╗ ██╗   ██╗██╗██████╗
-██║     ██║██╔═══██╗██║   ██║██║██╔══██╗
-██║     ██║██║   ██║██║   ██║██║██║  ██║
-██║     ██║██║▄▄ ██║██║   ██║██║██║  ██║
-███████╗██║╚██████╔╝╚██████╔╝██║██████╔╝
-╚══════╝╚═╝ ╚══▀▀═╝  ╚═════╝ ╚═╝╚═════╝
+██╗  ██╗██╗   ██╗██████╗  █████╗
+██║  ██║╚██╗ ██╔╝██╔══██╗██╔══██╗
+███████║ ╚████╔╝ ██████╔╝███████║
+██╔══██║  ╚██╔╝  ██╔══██╗██╔══██║
+██║  ██║   ██║   ██║  ██║██║  ██║
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
 
- Liquid Glass Hyprland
- Installer by Yogaraj Juju
+        HYRA Installer
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -37,32 +47,27 @@ sleep 1
 # Fedora check
 #--------------------------------#
 
-echo -e "${CYAN}🔍 Checking system...${NC}"
+log "${CYAN}🔍 Checking system...${NC}"
 
 if ! command -v dnf &> /dev/null; then
-    echo -e "${RED}❌ Unsupported distro. Fedora required.${NC}"
+    log "${RED}❌ Unsupported distro. Fedora required.${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}✔ Fedora detected${NC}"
-
-sleep 1
+log "${GREEN}✔ Fedora detected${NC}"
 
 #--------------------------------#
-# GPU Detection
+# Dependency Installer
 #--------------------------------#
 
-echo -e "${CYAN}🧠 Detecting GPU...${NC}"
-
-if lspci | grep -i nvidia &>/dev/null; then
-    GPU="nvidia"
-elif lspci | grep -i amd &>/dev/null; then
-    GPU="amd"
-else
-    GPU="intel"
-fi
-
-echo -e "${GREEN}✔ GPU detected: $GPU${NC}"
+install_pkg() {
+    if rpm -q "$1" &> /dev/null; then
+        log "${GREEN}✔ $1 already installed${NC}"
+    else
+        log "${CYAN}Installing $1...${NC}"
+        sudo dnf install -y "$1" >> "$LOG_FILE" 2>&1
+    fi
+}
 
 #--------------------------------#
 # Menu
@@ -70,8 +75,7 @@ echo -e "${GREEN}✔ GPU detected: $GPU${NC}"
 
 echo ""
 echo -e "${PURPLE}Select Installation Type${NC}"
-
-echo "1) Full Install"
+echo "1) Full Install (Recommended)"
 echo "2) Only Configs"
 echo "3) Exit"
 
@@ -81,31 +85,25 @@ case $choice in
 
 1)
 
-echo -e "${CYAN}📦 Installing dependencies...${NC}"
+log "${CYAN}📦 Installing dependencies...${NC}"
 
-sudo dnf copr enable solopasha/hyprland -y
+sudo dnf copr enable solopasha/hyprland -y >> "$LOG_FILE" 2>&1
 
-sudo dnf install -y \
-hyprland \
-waybar \
-swaync \
-rofi \
-swww \
-kitty \
-brightnessctl \
-wireplumber \
-NetworkManager-tui \
-grim \
-slurp \
-jetbrains-mono-fonts-all \
-nwg-look \
-hypridle
+packages=(
+hyprland waybar swaync rofi swww kitty brightnessctl
+wireplumber NetworkManager-tui grim slurp
+jetbrains-mono-fonts-all nwg-look hypridle
+)
+
+for pkg in "${packages[@]}"; do
+    install_pkg "$pkg"
+done
 
 ;;
 
 2)
 
-echo -e "${CYAN}Skipping package installation${NC}"
+log "${CYAN}Skipping package installation${NC}"
 
 ;;
 
@@ -118,7 +116,7 @@ exit 0
 
 *)
 
-echo -e "${RED}Invalid option${NC}"
+log "${RED}Invalid option${NC}"
 exit 1
 
 ;;
@@ -129,47 +127,59 @@ esac
 # Backup configs
 #--------------------------------#
 
-echo ""
-echo -e "${CYAN}📂 Backing up configs...${NC}"
+log "${CYAN}📂 Backing up configs...${NC}"
 
-mkdir -p ~/.config/hypr_backup
+BACKUP_DIR=~/.config/hyra_backup_$(date +%s)
+mkdir -p "$BACKUP_DIR"
 
-[ -d ~/.config/hypr ] && mv ~/.config/hypr ~/.config/hypr_backup/hypr_$(date +%s)
-[ -d ~/.config/waybar ] && mv ~/.config/waybar ~/.config/hypr_backup/waybar_$(date +%s)
+[ -d ~/.config/hypr ] && mv ~/.config/hypr "$BACKUP_DIR/"
+[ -d ~/.config/waybar ] && mv ~/.config/waybar "$BACKUP_DIR/"
 
-echo -e "${GREEN}✔ Backup complete${NC}"
+log "${GREEN}✔ Backup stored in $BACKUP_DIR${NC}"
 
 #--------------------------------#
 # Deploy configs
 #--------------------------------#
 
-echo ""
-echo -e "${CYAN}🚀 Installing Liquid Glass configs...${NC}"
+log "${CYAN}🚀 Installing Hyra configs...${NC}"
 
 cp -r .config/* ~/.config/
 
 chmod +x ~/.config/hypr/random_wall.sh
 
-echo -e "${GREEN}✔ Config installation finished${NC}"
+log "${GREEN}✔ Config installation finished${NC}"
+
+#--------------------------------#
+# Rollback option
+#--------------------------------#
+
+echo ""
+read -rp "Do you want to rollback changes? (y/N): " rollback
+
+if [[ "$rollback" == "y" || "$rollback" == "Y" ]]; then
+    log "${RED}🔄 Rolling back...${NC}"
+
+    rm -rf ~/.config/hypr ~/.config/waybar
+    cp -r "$BACKUP_DIR"/* ~/.config/
+
+    log "${GREEN}✔ Rollback completed${NC}"
+    exit 0
+fi
 
 #--------------------------------#
 # Finish
 #--------------------------------#
 
-echo ""
-
 cat << "EOF"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🟣 Installation Complete
+🌊 HYRA Installation Complete
 
 Log out and select Hyprland session.
 
-Keybind:
-SUPER + ALT + W → Change wallpaper
-
-Enjoy Liquid Glass ✨
+Enjoy Hyra ✨
+Minimal. Fluid. Beautiful.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
