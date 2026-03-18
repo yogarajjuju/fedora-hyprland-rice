@@ -90,7 +90,7 @@ This setup will **modify your system configuration**.
 Run the following commands:
 
 ```bash
-git clone https://github.com/yogarajjuju/fedora-hyprland-rice.git
+git clone https://github.com/yogarajjuju/Hydra.git
 cd fedora-hyprland-rice
 chmod +x install.sh
 ./install.sh
