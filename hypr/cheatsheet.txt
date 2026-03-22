@@ -1,0 +1,61 @@
+🔥 HYDRA SHORTCUTS (PRO SETUP)
+
+🪟 WINDOW CONTROL
+SUPER + Q              → Close window
+SUPER + F              → Fullscreen
+SUPER + SHIFT + SPACE  → Toggle floating
+
+🖥️ APPS
+SUPER + T              → Terminal (kitty)
+SUPER + E              → File manager
+SUPER + B              → Browser
+SUPER + V              → VS Code
+SUPER + A              → App launcher (rofi)
+
+🧭 NAVIGATION
+SUPER + ← ↑ ↓ →        → Move focus
+SUPER + SHIFT + arrows → Move window
+SUPER + CTRL + arrows  → Swap windows
+
+📐 RESIZE
+SUPER + ALT + arrows   → Resize window
+ALT + mouse drag       → Move window
+ALT + right click      → Resize window
+
+🗂️ WORKSPACES
+SUPER + 1..5           → Switch workspace
+SUPER + SHIFT + 1..5   → Move window
+
+📸 SCREENSHOT
+SUPER + P              → Area screenshot
+PRINT                  → Full screenshot
+
+🔊 SYSTEM
+Volume keys            → Volume control
+Brightness keys        → Brightness control
+
+🔒 SYSTEM
+SUPER + L              → Lock screen
+ALT + CTRL_R           → Reload waybar
+
+🌐 NETWORK
+SUPER + W              → WiFi menu
+
+🖼️ WALLPAPER
+SUPER + ALT + W        → Change wallpaper
+
+🎨 LAYOUT CONTROL
+SUPER + TAB            → Cycle layout
+SUPER + S              → Toggle split
+SUPER + M              → Master layout
+SUPER + D              → Dwindle layout
+
+🎞️ ANIMATIONS
+SUPER + SHIFT + F1     → Smooth mode
+SUPER + SHIFT + F2     → Bounce mode
+
+🎵 CAVA
+SUPER + C              → Open visualizer
+
+📋 HELP
+SUPER + /              → Show this menu
