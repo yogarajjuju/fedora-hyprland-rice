@@ -1,9 +1,28 @@
-#!/bin/bash
-# Start daemon if not running
-swww-daemon || swww init
+#!/usr/bin/env bash
 
-WALL_DIR="/home/juju/Pictures/Wallpapers/"
-RANDOM_WALL=$(find "$WALL_DIR" -type f | shuf -n 1)
+export PATH=$PATH:/home/juju/.cargo/bin:/usr/bin:/usr/local/bin
 
-# Apply the wallpaper and CLEAR the old cache
-swww img "$RANDOM_WALL" --transition-type wipe --transition-step 90 --transition-fps 60
+DIR="$HOME/Pictures/Wallpapers"
+
+# pick random wallpaper
+WALL=$(find "$DIR" -type f | shuf -n 1)
+
+# start swww if not running
+pgrep swww-daemon >/dev/null || swww-daemon &
+sleep 0.5
+
+# set wallpaper with smooth transition
+swww img "$WALL" --transition-type any --transition-fps 60
+
+# apply wallust colors (IMPORTANT: only once)
+wallust run "$WALL"
+
+# update terminal colors
+kitty @ set-colors -a ~/.cache/wallust/sequences 2>/dev/null
+
+# restart waybar for new colors
+killall waybar
+waybar &
+
+# notify
+notify-send "🎨 Hydra Theme Updated" "$(basename "$WALL")"
