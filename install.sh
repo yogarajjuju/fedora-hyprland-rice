@@ -5,19 +5,12 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
 
 LOG_FILE="hydra-install.log"
-
-#--------------------------------#
-# Logging
-#--------------------------------#
+VERSION="v1.2"
 
 log() {
     echo -e "$1"
     echo -e "$(date '+%H:%M:%S') - $1" >> "$LOG_FILE"
 }
-
-#--------------------------------#
-# Colors
-#--------------------------------#
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -25,35 +18,6 @@ PURPLE='\033[1;35m'
 CYAN='\033[0;36m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
-
-#--------------------------------#
-# Notification
-#--------------------------------#
-
-notify() {
-    command -v notify-send &>/dev/null && notify-send "Hydra" "$1"
-}
-
-#--------------------------------#
-# Progress Bar
-#--------------------------------#
-
-progress() {
-    local step=$1
-    local total=$2
-    local percent=$(( step * 100 / total ))
-    local filled=$(( percent / 2 ))
-    local empty=$(( 50 - filled ))
-
-    printf "\r["
-    printf "%0.s#" $(seq 1 $filled)
-    printf "%0.s-" $(seq 1 $empty)
-    printf "] %d%%" "$percent"
-}
-
-#--------------------------------#
-# Spinner
-#--------------------------------#
 
 spinner() {
     local pid=$!
@@ -72,14 +36,18 @@ run() {
     spinner
 }
 
-#--------------------------------#
-# Animated Logo
-#--------------------------------#
+progress() {
+    local step=$1
+    local total=$2
+    local percent=$(( step * 100 / total ))
+    printf "\rProgress: %d%%\n" "$percent"
+}
 
-animate_logo() {
-for i in {1..3}; do
 clear
+
 cat << "EOF"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ██╗  ██╗██╗   ██╗██████╗  █████╗
 ██║  ██║╚██╗ ██╔╝██╔══██╗██╔══██╗
@@ -90,26 +58,17 @@ cat << "EOF"
 
         HYDRA Installer
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 EOF
-sleep 0.3
-done
-}
 
-animate_logo
-
-TOTAL_STEPS=5
-STEP=0
-
-next_step() {
-    STEP=$((STEP+1))
-    echo -e "\n${PURPLE}Step $STEP/$TOTAL_STEPS${NC}"
-}
+echo "Version: $VERSION"
+sleep 1
 
 #--------------------------------#
 # System Check
 #--------------------------------#
 
-next_step
 log "${CYAN}🔍 Checking system...${NC}"
 
 if ! command -v dnf &> /dev/null; then
@@ -118,7 +77,6 @@ if ! command -v dnf &> /dev/null; then
 fi
 
 log "${GREEN}✔ Fedora detected${NC}"
-progress $STEP $TOTAL_STEPS
 
 #--------------------------------#
 # Menu
@@ -132,82 +90,48 @@ echo "3) Exit"
 
 read -rp "Choice: " choice
 
-#--------------------------------#
-# Dependencies
-#--------------------------------#
-
-next_step
-
 if [[ "$choice" == "1" ]]; then
-log "${CYAN}📦 Installing dependencies...${NC}"
+    log "${CYAN}📦 Installing dependencies...${NC}"
+    run sudo dnf copr enable solopasha/hyprland -y
 
-run sudo dnf copr enable solopasha/hyprland -y
+    packages=(hyprland waybar rofi swww kitty brightnessctl wireplumber NetworkManager-tui grim slurp)
 
-packages=(
-hyprland waybar rofi swww kitty brightnessctl
-wireplumber NetworkManager-tui grim slurp
-)
-
-for pkg in "${packages[@]}"; do
-    log "${CYAN}Installing $pkg...${NC}"
-    run sudo dnf install -y "$pkg"
-done
+    for pkg in "${packages[@]}"; do
+        log "${CYAN}Installing $pkg...${NC}"
+        run sudo dnf install -y "$pkg"
+    done
 fi
 
-progress $STEP $TOTAL_STEPS
-
 #--------------------------------#
-# Backup
+# Backup (FIXED)
 #--------------------------------#
 
-next_step
 log "${CYAN}📂 Backing up configs...${NC}"
 
 BACKUP_DIR=~/.config/hydra_backup_$(date +%s)
 mkdir -p "$BACKUP_DIR"
 
-run cp -r ~/.config/hypr "$BACKUP_DIR/" 2>/dev/null
-run cp -r ~/.config/waybar "$BACKUP_DIR/" 2>/dev/null
-run cp -r ~/.config/scripts "$BACKUP_DIR/" 2>/dev/null
+cp -r ~/.config/hypr "$BACKUP_DIR/" 2>/dev/null
+cp -r ~/.config/waybar "$BACKUP_DIR/" 2>/dev/null
+cp -r ~/.config/scripts "$BACKUP_DIR/" 2>/dev/null
 
-progress $STEP $TOTAL_STEPS
+log "${GREEN}✔ Backup done${NC}"
 
 #--------------------------------#
 # Install
 #--------------------------------#
 
-next_step
 log "${CYAN}🚀 Installing Hydra configs...${NC}"
 
 mkdir -p ~/.config
 
-run cp -r hypr ~/.config/
-run cp -r waybar ~/.config/
-run cp -r scripts ~/.config/
+[ -d hypr ] && cp -r hypr ~/.config/
+[ -d waybar ] && cp -r waybar ~/.config/
+[ -d scripts ] && cp -r scripts ~/.config/
 
 chmod +x ~/.config/scripts/*.sh 2>/dev/null
 
-progress $STEP $TOTAL_STEPS
+log "${GREEN}✔ Installation complete${NC}"
 
-#--------------------------------#
-# Finish
-#--------------------------------#
-
-next_step
-log "${GREEN}✔ Installation Complete${NC}"
-
-progress $STEP $TOTAL_STEPS
-
-notify "Hydra installed successfully"
-
-cat << "EOF"
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🌊 HYDRA Installation Complete
-
-Enjoy Hydra ✨
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-EOF
+echo ""
+echo "✅ HYDRA Installed Successfully"
