@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-LOG_FILE="hydra-install.log"
+LOG_FILE="hydra-update.log"
 
 #--------------------------------#
 # Logging
@@ -35,7 +35,7 @@ cat << "EOF"
 ██║  ██║   ██║   ██║  ██║██║  ██║
 ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
 
-        HYDRA Installer
+        HYDRA Updater
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -44,84 +44,29 @@ EOF
 sleep 1
 
 #--------------------------------#
-# Fedora check
+# Check repo
 #--------------------------------#
 
-log "${CYAN}🔍 Checking system...${NC}"
+log "${CYAN}🔍 Checking Hydra repo...${NC}"
 
-if ! command -v dnf &> /dev/null; then
-    log "${RED}❌ Unsupported distro. Fedora required.${NC}"
+if [ ! -d "$HOME/Hydra" ]; then
+    log "${RED}❌ Hydra repo not found in ~/Hydra${NC}"
     exit 1
 fi
 
-log "${GREEN}✔ Fedora detected${NC}"
+cd "$HOME/Hydra"
+
+log "${GREEN}✔ Repo found${NC}"
 
 #--------------------------------#
-# Dependency Installer
+# Pull latest changes
 #--------------------------------#
 
-install_pkg() {
-    if rpm -q "$1" &> /dev/null; then
-        log "${GREEN}✔ $1 already installed${NC}"
-    else
-        log "${CYAN}Installing $1...${NC}"
-        sudo dnf install -y "$1" >> "$LOG_FILE" 2>&1
-    fi
-}
+log "${CYAN}📡 Fetching updates...${NC}"
 
-#--------------------------------#
-# Menu
-#--------------------------------#
+git pull origin main >> "$LOG_FILE" 2>&1
 
-echo ""
-echo -e "${PURPLE}Select Installation Type${NC}"
-echo "1) Full Install (Recommended)"
-echo "2) Only Configs"
-echo "3) Exit"
-
-read -rp "Choice: " choice
-
-case $choice in
-
-1)
-
-log "${CYAN}📦 Installing dependencies...${NC}"
-
-sudo dnf copr enable solopasha/hyprland -y >> "$LOG_FILE" 2>&1
-
-packages=(
-hyprland waybar swaync rofi swww kitty brightnessctl
-wireplumber NetworkManager-tui grim slurp
-jetbrains-mono-fonts-all nwg-look hypridle
-)
-
-for pkg in "${packages[@]}"; do
-    install_pkg "$pkg"
-done
-
-;;
-
-2)
-
-log "${CYAN}Skipping package installation${NC}"
-
-;;
-
-3)
-
-echo "Exiting installer"
-exit 0
-
-;;
-
-*)
-
-log "${RED}Invalid option${NC}"
-exit 1
-
-;;
-
-esac
+log "${GREEN}✔ Repository updated${NC}"
 
 #--------------------------------#
 # Backup configs
@@ -138,19 +83,29 @@ cp -r ~/.config/waybar "$BACKUP_DIR/" 2>/dev/null
 log "${GREEN}✔ Backup stored in $BACKUP_DIR${NC}"
 
 #--------------------------------#
-# Deploy configs (FIXED)
+# Apply configs
 #--------------------------------#
 
-log "${CYAN}🚀 Installing Hydra configs...${NC}"
+log "${CYAN}🚀 Applying updates...${NC}"
 
-mkdir -p ~/.config
+rm -rf ~/.config/hypr ~/.config/waybar
 
 cp -r hypr ~/.config/
 cp -r waybar ~/.config/
 
 chmod +x ~/.config/hypr/random_wall.sh 2>/dev/null
 
-log "${GREEN}✔ Config installation finished${NC}"
+log "${GREEN}✔ Update applied successfully${NC}"
+
+#--------------------------------#
+# Reload Hyprland
+#--------------------------------#
+
+log "${CYAN}🔄 Reloading Hyprland...${NC}"
+
+hyprctl reload >> "$LOG_FILE" 2>&1 || true
+
+log "${GREEN}✔ Reload complete${NC}"
 
 #--------------------------------#
 # Rollback option
@@ -177,12 +132,9 @@ cat << "EOF"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🌊 HYDRA Installation Complete
+🔄 HYDRA Update Complete
 
-Log out and select Hyprland session.
-
-Enjoy Hydra ✨
-Minimal. Fluid. Beautiful.
+Your system is now up to date ✨
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
