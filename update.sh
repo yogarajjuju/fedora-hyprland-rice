@@ -13,70 +13,29 @@ log() {
 
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
-RED='\033[0;31m'
 NC='\033[0m'
 
 clear
-
-cat << "EOF"
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-        HYDRA Updater
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-EOF
-
-sleep 1
-
-log "${CYAN}📡 Fetching updates...${NC}"
+echo "🔄 HYDRA Updater"
 
 git pull origin main >> "$LOG_FILE" 2>&1
-
-log "${GREEN}✔ Repository updated${NC}"
-
-#--------------------------------#
-# Backup
-#--------------------------------#
-
-log "${CYAN}📂 Backing up configs...${NC}"
 
 BACKUP_DIR=~/.config/hydra_backup_$(date +%s)
 mkdir -p "$BACKUP_DIR"
 
 cp -r ~/.config/hypr "$BACKUP_DIR/" 2>/dev/null
 cp -r ~/.config/waybar "$BACKUP_DIR/" 2>/dev/null
+cp -r ~/.config/scripts "$BACKUP_DIR/" 2>/dev/null
 
-log "${GREEN}✔ Backup created${NC}"
+# Apply safely
+rm -rf ~/.config/hypr ~/.config/waybar ~/.config/scripts
 
-#--------------------------------#
-# Apply configs
-#--------------------------------#
+[ -d hypr ] && cp -r hypr ~/.config/
+[ -d waybar ] && cp -r waybar ~/.config/
+[ -d scripts ] && cp -r scripts ~/.config/
 
-log "${CYAN}🚀 Applying updates...${NC}"
+chmod +x ~/.config/scripts/*.sh 2>/dev/null
 
-rm -rf ~/.config/hypr ~/.config/waybar
+hyprctl reload || true
 
-cp -r hypr ~/.config/
-cp -r waybar ~/.config/
-
-chmod +x ~/.config/hypr/random_wall.sh 2>/dev/null
-
-log "${GREEN}✔ Update applied${NC}"
-
-#--------------------------------#
-# Reload
-#--------------------------------#
-
-log "${CYAN}🔄 Reloading Hyprland...${NC}"
-hyprctl reload >> "$LOG_FILE" 2>&1 || true
-
-log "${GREEN}✔ Reload complete${NC}"
-
-#--------------------------------#
-# Finish
-#--------------------------------#
-
-echo ""
-echo -e "${GREEN}✅ HYDRA updated successfully!${NC}"
+log "${GREEN}✔ Updated${NC}"

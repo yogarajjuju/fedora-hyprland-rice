@@ -23,13 +23,63 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 PURPLE='\033[1;35m'
 CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
 NC='\033[0m'
 
+#--------------------------------#
+# Notification
+#--------------------------------#
+
+notify() {
+    command -v notify-send &>/dev/null && notify-send "Hydra" "$1"
+}
+
+#--------------------------------#
+# Progress Bar
+#--------------------------------#
+
+progress() {
+    local step=$1
+    local total=$2
+    local percent=$(( step * 100 / total ))
+    local filled=$(( percent / 2 ))
+    local empty=$(( 50 - filled ))
+
+    printf "\r["
+    printf "%0.s#" $(seq 1 $filled)
+    printf "%0.s-" $(seq 1 $empty)
+    printf "] %d%%" "$percent"
+}
+
+#--------------------------------#
+# Spinner
+#--------------------------------#
+
+spinner() {
+    local pid=$!
+    local spin='|/-\'
+    local i=0
+    while kill -0 $pid 2>/dev/null; do
+        i=$(( (i+1) %4 ))
+        printf "\r${YELLOW}[%c] Working...${NC}" "${spin:$i:1}"
+        sleep 0.1
+    done
+    printf "\r"
+}
+
+run() {
+    "$@" >> "$LOG_FILE" 2>&1 &
+    spinner
+}
+
+#--------------------------------#
+# Animated Logo
+#--------------------------------#
+
+animate_logo() {
+for i in {1..3}; do
 clear
-
 cat << "EOF"
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ██╗  ██╗██╗   ██╗██████╗  █████╗
 ██║  ██║╚██╗ ██╔╝██╔══██╗██╔══██╗
@@ -40,37 +90,35 @@ cat << "EOF"
 
         HYDRA Installer
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 EOF
+sleep 0.3
+done
+}
 
-sleep 1
+animate_logo
+
+TOTAL_STEPS=5
+STEP=0
+
+next_step() {
+    STEP=$((STEP+1))
+    echo -e "\n${PURPLE}Step $STEP/$TOTAL_STEPS${NC}"
+}
 
 #--------------------------------#
-# Fedora check
+# System Check
 #--------------------------------#
 
+next_step
 log "${CYAN}🔍 Checking system...${NC}"
 
 if ! command -v dnf &> /dev/null; then
-    log "${RED}❌ Unsupported distro. Fedora required.${NC}"
+    log "${RED}❌ Fedora required${NC}"
     exit 1
 fi
 
 log "${GREEN}✔ Fedora detected${NC}"
-
-#--------------------------------#
-# Dependency Installer
-#--------------------------------#
-
-install_pkg() {
-    if rpm -q "$1" &> /dev/null; then
-        log "${GREEN}✔ $1 already installed${NC}"
-    else
-        log "${CYAN}Installing $1...${NC}"
-        sudo dnf install -y "$1" >> "$LOG_FILE" 2>&1
-    fi
-}
+progress $STEP $TOTAL_STEPS
 
 #--------------------------------#
 # Menu
@@ -78,103 +126,79 @@ install_pkg() {
 
 echo ""
 echo -e "${PURPLE}Select Installation Type${NC}"
-echo "1) Full Install (Recommended)"
+echo "1) Full Install"
 echo "2) Only Configs"
 echo "3) Exit"
 
 read -rp "Choice: " choice
 
-case $choice in
+#--------------------------------#
+# Dependencies
+#--------------------------------#
 
-1)
+next_step
 
+if [[ "$choice" == "1" ]]; then
 log "${CYAN}📦 Installing dependencies...${NC}"
 
-sudo dnf copr enable solopasha/hyprland -y >> "$LOG_FILE" 2>&1
+run sudo dnf copr enable solopasha/hyprland -y
 
 packages=(
-hyprland waybar swaync rofi swww kitty brightnessctl
+hyprland waybar rofi swww kitty brightnessctl
 wireplumber NetworkManager-tui grim slurp
-jetbrains-mono-fonts-all nwg-look hypridle
 )
 
 for pkg in "${packages[@]}"; do
-    install_pkg "$pkg"
+    log "${CYAN}Installing $pkg...${NC}"
+    run sudo dnf install -y "$pkg"
 done
+fi
 
-;;
-
-2)
-
-log "${CYAN}Skipping package installation${NC}"
-
-;;
-
-3)
-
-echo "Exiting installer"
-exit 0
-
-;;
-
-*)
-
-log "${RED}Invalid option${NC}"
-exit 1
-
-;;
-
-esac
+progress $STEP $TOTAL_STEPS
 
 #--------------------------------#
-# Backup configs
+# Backup
 #--------------------------------#
 
+next_step
 log "${CYAN}📂 Backing up configs...${NC}"
 
 BACKUP_DIR=~/.config/hydra_backup_$(date +%s)
 mkdir -p "$BACKUP_DIR"
 
-cp -r ~/.config/hypr "$BACKUP_DIR/" 2>/dev/null
-cp -r ~/.config/waybar "$BACKUP_DIR/" 2>/dev/null
+run cp -r ~/.config/hypr "$BACKUP_DIR/" 2>/dev/null
+run cp -r ~/.config/waybar "$BACKUP_DIR/" 2>/dev/null
+run cp -r ~/.config/scripts "$BACKUP_DIR/" 2>/dev/null
 
-log "${GREEN}✔ Backup stored in $BACKUP_DIR${NC}"
+progress $STEP $TOTAL_STEPS
 
 #--------------------------------#
-# Deploy configs
+# Install
 #--------------------------------#
 
+next_step
 log "${CYAN}🚀 Installing Hydra configs...${NC}"
 
 mkdir -p ~/.config
 
-cp -r hypr ~/.config/
-cp -r waybar ~/.config/
+run cp -r hypr ~/.config/
+run cp -r waybar ~/.config/
+run cp -r scripts ~/.config/
 
-chmod +x ~/.config/hypr/random_wall.sh 2>/dev/null
+chmod +x ~/.config/scripts/*.sh 2>/dev/null
 
-log "${GREEN}✔ Config installation finished${NC}"
-
-#--------------------------------#
-# Rollback option
-#--------------------------------#
-
-echo ""
-read -rp "Do you want to rollback changes? (y/N): " rollback
-
-if [[ "$rollback" == "y" || "$rollback" == "Y" ]]; then
-    log "${RED}🔄 Rolling back...${NC}"
-
-    rm -rf ~/.config/hypr ~/.config/waybar
-    cp -r "$BACKUP_DIR"/* ~/.config/
-
-    log "${GREEN}✔ Rollback completed${NC}"
-    exit 0
-fi
+progress $STEP $TOTAL_STEPS
 
 #--------------------------------#
 # Finish
 #--------------------------------#
+
+next_step
+log "${GREEN}✔ Installation Complete${NC}"
+
+progress $STEP $TOTAL_STEPS
+
+notify "Hydra installed successfully"
 
 cat << "EOF"
 
@@ -182,10 +206,7 @@ cat << "EOF"
 
 🌊 HYDRA Installation Complete
 
-Log out and select Hyprland session.
-
 Enjoy Hydra ✨
-Minimal. Fluid. Beautiful.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
