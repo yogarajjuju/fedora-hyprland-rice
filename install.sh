@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
+
 LOG_FILE="hydra-install.log"
 
 #--------------------------------#
@@ -138,7 +141,7 @@ cp -r ~/.config/waybar "$BACKUP_DIR/" 2>/dev/null
 log "${GREEN}✔ Backup stored in $BACKUP_DIR${NC}"
 
 #--------------------------------#
-# Deploy configs (FIXED)
+# Deploy configs
 #--------------------------------#
 
 log "${CYAN}🚀 Installing Hydra configs...${NC}"
