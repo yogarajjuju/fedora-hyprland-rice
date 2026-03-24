@@ -59,3 +59,31 @@ SUPER + C              → Open visualizer
 
 📋 HELP
 SUPER + /              → Show this menu
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🖐️ TRACKPAD GESTURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3-Finger (Navigation)
+
+3 Finger Left        → Previous Workspace
+3 Finger Right       → Next Workspace
+3 Finger Up          → Fullscreen Window
+3 Finger Down        → Open App Launcher (Rofi)
+
+-------------------------
+
+4-Finger (Media + Power)
+
+4 Finger Up          → Play / Pause Media
+4 Finger Down        → Next Track
+4 Finger Left        → Move to Previous Workspace
+4 Finger Right       → Move to Next Workspace
+
+-------------------------
+
+Tips
+
+• Use full swipe (not tap)
+• Move fingers smoothly across the touchpad
+• Works best with natural scrolling enabled

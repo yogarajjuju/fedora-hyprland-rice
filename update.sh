@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 set -e
 
@@ -33,3 +34,25 @@ chmod +x ~/.config/scripts/*.sh 2>/dev/null
 hyprctl reload || true
 
 echo "✅ Updated"
+=======
+#!/bin/bash
+
+echo "🔄 Updating Hydra..."
+
+REPO_DIR="$HOME/Hydra"
+CONFIG_DIR="$HOME/.config/hypr"
+
+# pull latest changes
+cd "$REPO_DIR" || exit
+git pull origin main
+
+echo "📦 Updating configs..."
+
+# backup old config
+cp -r "$CONFIG_DIR" "$CONFIG_DIR.backup.$(date +%s)"
+
+# copy new config
+cp -r "$REPO_DIR/hypr" "$HOME/.config/"
+
+echo "✅ Hydra updated successfully!"
+

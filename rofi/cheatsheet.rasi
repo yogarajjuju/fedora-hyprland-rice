@@ -1,0 +1,38 @@
+* {
+    font: "JetBrainsMono Nerd Font 12";
+    bg: #1e1e2e;
+    fg: #cdd6f4;
+    accent: #cba6f7;
+}
+
+window {
+    width: 600px;
+    border-radius: 16px;
+    background-color: @bg;
+    border: 2px;
+    border-color: @accent;
+    padding: 20px;
+}
+
+mainbox {
+    children: [inputbar, listview];
+}
+
+inputbar {
+    enabled: false;
+}
+
+listview {
+    spacing: 8px;
+    lines: 20;
+}
+
+element {
+    padding: 5px;
+    text-color: @fg;
+}
+
+element selected {
+    background-color: @accent;
+    text-color: #1e1e2e;
+}
