@@ -1,79 +1,154 @@
-/* Custom color palette matched to your lockscreen */
-@define-color text-main #cba6f7; /* Lavender/Purple accent */
-@define-color text-alt #f5e0dc;  /* Rosewater/White */
-@define-color bg-dark #11111b;   /* Deep Black background */
-@define-color bg-hover #1e1e2e;  /* Hover background */
+/* ===== COLORS ===== */
+@define-color text-main #cba6f7;
+@define-color text-alt #f5e0dc;
+@define-color bg-dark #11111b;
+@define-color bg-hover #1e1e2e;
 
+/* ===== GLOBAL ===== */
 * {
     border: none;
-    border-radius: 20px;
-    font-family: "JetBrainsMono Nerd Font", sans-serif;
-    font-size: 11px;
-    font-weight: bold;
-    min-height: 0;
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+    font-weight: 600;
 }
 
+/* ===== BAR ===== */
+/* ===== BAR ===== */
 window#waybar {
     background: transparent;
 }
 
-/* The floating island effect */
-.modules-left, .modules-center, .modules-right {
-    background-color: rgba(30, 30, 46, 0.7);
-    padding: 2px 10px;
-    color: @text-alt; /* Subtle white/rosewater text */
-}
+/* ===== TRUE PILL ISLANDS ===== */
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: rgba(30, 30, 46, 0.75);
 
+    padding: 6px 16px;   /* more horizontal space */
+    margin: 6px 8px;
+
+    border-radius: 999px; /* THIS MAKES IT PILL */
+
+    color: @text-alt;
+
+    /* soft glow */
+    box-shadow: 0px 4px 15px rgba(203,166,247,0.12);
+}
+/* ===== WORKSPACES ===== */
 #workspaces button {
-color: @text-alt;
-padding: 0 8px;
-background: transparent;
+padding: 4px 10px;
+margin: 2px;
+border-radius: 10px;
+color: #888;
+transition: all 0.2s ease;
 }
 
 #workspaces button.active {
-color: @text-main; /* Uses your new purple for active workspace */
-}
+color: #cba6f7;
+background: rgba(203,166,247,0.15);
+border-radius: 12px;
 
-#mpris {
-background-color: rgba(30, 30, 46, 0.7);
-padding: 4px 16px;
-color: @text-main; /* Purple for music info */
-margin-right: 10px;
+box-shadow: 0 0 10px rgba(203,166,247,0.5);
 }
-
-#cava, #network {
-background-color: rgba(30, 30, 46, 0.7);
-padding: 4px 16px;
-color: @text-alt;
-margin-right: 10px;
-}
-
-#network, #pulseaudio, #battery, #clock {
-margin-left: 10px;
-margin-right: 10px;
-}
-
+/* ===== CLOCK ===== */
 #clock {
-color: @text-main; /* Clock now perfectly matches the purple dragon accent */
+color: @text-main;
+font-weight: bold;
 }
 
+/* ===== MODULE BASE ===== */
+#network,
+#pulseaudio,
+#battery,
+#cpu,
+#temperature,
+#custom-power,
+#custom-net {
+padding: 0 10px;
+border-radius: 10px;
+transition: all 0.2s ease;
+}
+
+/* ===== HOVER EFFECT ===== */
+#network:hover,
+#pulseaudio:hover,
+#battery:hover,
+#cpu:hover,
+#temperature:hover,
+#custom-power:hover {
+background-color: @bg-hover;
+}
+
+/* ===== MPRIS (MUSIC) ===== */
+#mpris {
+background-color: rgba(30, 30, 46, 0.75);
+padding: 4px 14px;
+border-radius: 15px;
+color: @text-main;
+margin-right: 8px;
+}
+
+/* ===== BATTERY ===== */
 #battery.charging {
-color: #a6e3a1; /* Success Green */
-border-bottom: 2px solid #a6e3a1;
+color: #a6e3a1;
 }
 
 #battery.critical:not(.charging) {
-color: #f38ba8; /* Error Red */
-animation-name: blink;
-animation-duration: 0.5s;
-animation-timing-function: linear;
-animation-iteration-count: infinite;
-animation-direction: alternate;
+color: #f38ba8;
+animation: blink 0.6s infinite alternate;
 }
 
+/* ===== NET SPEED ===== */
+#custom-net {
+color: #89b4fa;
+}
+
+/* ===== POWER ===== */
+#custom-power {
+color: #f38ba8;
+}
+
+/* ===== ANIMATION ===== */
 @keyframes blink {
     to {
         background-color: #f38ba8;
         color: #11111b;
     }
+}
+
+#bluetooth {
+color: #cba6f7;
+margin: 0 10px;
+}
+#custom-cava {
+font-family: "JetBrainsMono Nerd Font";
+font-size: 15px;
+
+color: #cba6f7;
+
+background: rgba(30, 30, 46, 0.7);
+border-radius: 14px;
+padding: 4px 10px;
+margin: 0 6px;
+
+/* smooth animation */
+transition: all 0.3s ease;
+
+/* subtle glow */
+text-shadow:
+0 0 6px rgba(203,166,247,0.6);
+}
+
+/* 🔥 when active (bars exist) */
+#custom-cava {
+font-family: "JetBrainsMono Nerd Font";
+font-size: 14px;
+
+color: #cba6f7;
+
+background: rgba(30, 30, 46, 0.6);
+border-radius: 12px;
+padding: 4px 10px;
+
+transition: all 0.3s ease;
 }
